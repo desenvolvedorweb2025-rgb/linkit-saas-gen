@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, FileDown, Trash2 } from "lucide-react";
+import { Plus, FileDown, Trash2, CheckCircle2, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
+import { generateReceiptPDF } from "@/lib/pdf";
 
 export const Route = createFileRoute("/_authenticated/orcamentos")({
   component: QuotesPage,
@@ -114,7 +115,7 @@ function QuotesPage() {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
-      const { data } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+      const { data } = await supabase.from("profiles").select("full_name, profession, phone").eq("id", user.id).single();
       return data;
     },
   });
@@ -150,6 +151,31 @@ function QuotesPage() {
       qc.invalidateQueries({ queryKey: ["quotes"] });
       qc.invalidateQueries({ queryKey: ["dashboard-stats"] });
     },
+  });
+
+  const markPaid = useMutation({
+    mutationFn: async (q: any) => {
+      const paid_at = new Date().toISOString();
+      const { error } = await supabase
+        .from("quotes")
+        .update({ paid_at } as any)
+        .eq("id", q.id);
+      if (error) throw error;
+      return { ...q, paid_at };
+    },
+    onSuccess: (q: any) => {
+      toast.success("Orçamento marcado como pago");
+      qc.invalidateQueries({ queryKey: ["quotes"] });
+      qc.invalidateQueries({ queryKey: ["quotes-paid"] });
+      generateReceiptPDF({
+        client_name: q.clients?.name || "—",
+        service: q.description,
+        amount: Number(q.amount),
+        paid_at: q.paid_at,
+        company: profile || {},
+      });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -209,34 +235,74 @@ function QuotesPage() {
               <TableHead>Cliente</TableHead>
               <TableHead>Descrição</TableHead>
               <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="w-24"></TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="w-32"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Carregando...</TableCell></TableRow>
+              <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">Carregando...</TableCell></TableRow>
             ) : quotes.length === 0 ? (
-              <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground">Nenhum orçamento.</TableCell></TableRow>
+              <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground">Nenhum orçamento.</TableCell></TableRow>
             ) : (
-              quotes.map((q) => (
+              quotes.map((q: any) => (
                 <TableRow key={q.id}>
                   <TableCell>{new Date(q.created_at).toLocaleDateString("pt-BR")}</TableCell>
-                  <TableCell>{(q as any).clients?.name || "—"}</TableCell>
+                  <TableCell>{q.clients?.name || "—"}</TableCell>
                   <TableCell className="max-w-xs truncate">{q.description}</TableCell>
                   <TableCell className="text-right font-medium">
                     R$ {Number(q.amount).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                   </TableCell>
                   <TableCell>
+                    {q.paid_at ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                        <CheckCircle2 className="h-3 w-3" /> Pago
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        Pendente
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <div className="flex justify-end gap-1">
+                      {q.paid_at ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          title="Baixar recibo"
+                          onClick={() =>
+                            generateReceiptPDF({
+                              client_name: q.clients?.name || "—",
+                              service: q.description,
+                              amount: Number(q.amount),
+                              paid_at: q.paid_at,
+                              company: profile || {},
+                            })
+                          }
+                        >
+                          <Receipt className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          title="Marcar como pago"
+                          onClick={() => markPaid.mutate(q)}
+                        >
+                          <CheckCircle2 className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
+                        title="Baixar orçamento"
                         onClick={() =>
                           generatePDF({
                             description: q.description,
                             amount: Number(q.amount),
                             created_at: q.created_at,
-                            client_name: (q as any).clients?.name,
+                            client_name: q.clients?.name,
                             professional_name: profile?.full_name,
                           })
                         }
