@@ -115,7 +115,7 @@ function QuotesPage() {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
-      const { data } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+      const { data } = await supabase.from("profiles").select("full_name, profession, phone").eq("id", user.id).single();
       return data;
     },
   });
