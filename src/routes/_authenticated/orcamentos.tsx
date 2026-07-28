@@ -153,6 +153,31 @@ function QuotesPage() {
     },
   });
 
+  const markPaid = useMutation({
+    mutationFn: async (q: any) => {
+      const paid_at = new Date().toISOString();
+      const { error } = await supabase
+        .from("quotes")
+        .update({ paid_at } as any)
+        .eq("id", q.id);
+      if (error) throw error;
+      return { ...q, paid_at };
+    },
+    onSuccess: (q: any) => {
+      toast.success("Orçamento marcado como pago");
+      qc.invalidateQueries({ queryKey: ["quotes"] });
+      qc.invalidateQueries({ queryKey: ["quotes-paid"] });
+      generateReceiptPDF({
+        client_name: q.clients?.name || "—",
+        service: q.description,
+        amount: Number(q.amount),
+        paid_at: q.paid_at,
+        company: profile || {},
+      });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
