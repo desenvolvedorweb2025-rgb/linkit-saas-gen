@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, FileDown, Trash2 } from "lucide-react";
+import { Plus, FileDown, Trash2, CheckCircle2, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
+import { generateReceiptPDF } from "@/lib/pdf";
 
 export const Route = createFileRoute("/_authenticated/orcamentos")({
   component: QuotesPage,
