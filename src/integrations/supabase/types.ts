@@ -79,32 +79,105 @@ export type Database = {
         }
         Relationships: []
       }
+      contracts: {
+        Row: {
+          amount: number
+          client_id: string | null
+          created_at: string
+          id: string
+          service_date: string | null
+          service_description: string
+          signature_name: string | null
+          signed_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          service_date?: string | null
+          service_description: string
+          signature_name?: string | null
+          signed_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          service_date?: string | null
+          service_description?: string
+          signature_name?: string | null
+          signed_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
+          amount: number | null
+          client_id: string | null
           created_at: string
+          description: string | null
           doc_type: string
+          file_path: string | null
+          file_size: number | null
           file_url: string | null
           id: string
+          mime_type: string | null
+          paid_at: string | null
           title: string
           user_id: string
         }
         Insert: {
+          amount?: number | null
+          client_id?: string | null
           created_at?: string
+          description?: string | null
           doc_type?: string
+          file_path?: string | null
+          file_size?: number | null
           file_url?: string | null
           id?: string
+          mime_type?: string | null
+          paid_at?: string | null
           title: string
           user_id: string
         }
         Update: {
+          amount?: number | null
+          client_id?: string | null
           created_at?: string
+          description?: string | null
           doc_type?: string
+          file_path?: string | null
+          file_size?: number | null
           file_url?: string | null
           id?: string
+          mime_type?: string | null
+          paid_at?: string | null
           title?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -140,6 +213,7 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          paid_at: string | null
           user_id: string
         }
         Insert: {
@@ -148,6 +222,7 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          paid_at?: string | null
           user_id: string
         }
         Update: {
@@ -156,6 +231,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          paid_at?: string | null
           user_id?: string
         }
         Relationships: [
