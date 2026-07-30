@@ -19,11 +19,11 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ServiçoPro — Gestão para autônomos a partir de R$29,90" },
+      { title: "ServiçoPro — Gestão para autônomos a partir de R$9,90" },
       {
         name: "description",
         content:
-          "Organize clientes, agenda, orçamentos com PDF e dashboard. Plano único R$29,90/mês com Pix, boleto e cartão.",
+          "Organize clientes, agenda, orçamentos com PDF e dashboard. Serviço avulso R$9,90 ou plano único R$59,90/mês com Pix, boleto e cartão.",
       },
     ],
   }),
@@ -94,7 +94,7 @@ function LandingPage() {
               <Button size="lg" variant="outline" className="h-12 px-8">Ver planos</Button>
             </a>
           </div>
-          <p className="mt-4 text-sm text-muted-foreground">A partir de R$ 29,90/mês · Sem cartão pra testar</p>
+          <p className="mt-4 text-sm text-muted-foreground">A partir de R$ 9,90 por serviço · Sem cartão pra testar</p>
         </div>
       </section>
 
@@ -144,51 +144,85 @@ function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="precos" className="mx-auto max-w-3xl px-6 py-24">
+      <section id="precos" className="mx-auto max-w-5xl px-6 py-24">
         <div className="text-center">
-          <h2 className="text-3xl font-semibold tracking-tight">Um plano. Sem surpresas.</h2>
-          <p className="mt-3 text-muted-foreground">Cancele quando quiser.</p>
+          <h2 className="text-3xl font-semibold tracking-tight">Escolha como pagar</h2>
+          <p className="mt-3 text-muted-foreground">Por serviço avulso ou plano mensal. Cancele quando quiser.</p>
         </div>
 
-        <div className="mt-10 rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-glow)]">
-          <div className="flex items-baseline justify-between gap-4">
-            <div>
-              <div className="text-sm font-medium text-primary">Plano Profissional</div>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-5xl font-bold">R$ 29,90</span>
-                <span className="text-muted-foreground">/mês</span>
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
+          {/* Plano Avulso */}
+          <div className="rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-card)]">
+            <div className="text-sm font-medium text-primary">Serviço Avulso</div>
+            <div className="mt-2 flex items-baseline gap-1">
+              <span className="text-5xl font-bold">R$ 9,90</span>
+              <span className="text-muted-foreground">/serviço</span>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">Ideal pra quem quer testar ou usa de vez em quando.</p>
+
+            <ul className="mt-8 grid gap-3">
+              {[
+                "Cadastro de clientes",
+                "Agenda de serviços",
+                "Orçamento com PDF avulso",
+                "Recibo do serviço",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary" /> {item}
+                </li>
+              ))}
+            </ul>
+
+            <Link to="/auth" className="mt-8 block">
+              <Button size="lg" variant="outline" className="h-12 w-full">Começar agora</Button>
+            </Link>
+          </div>
+
+          {/* Plano Profissional */}
+          <div className="relative rounded-3xl border border-primary bg-card p-8 shadow-[var(--shadow-glow)]">
+            <div className="absolute -top-3 right-8 rounded-full bg-[image:var(--gradient-primary)] px-3 py-1 text-xs font-medium text-primary-foreground">
+              Mais popular
+            </div>
+            <div className="flex items-baseline justify-between gap-4">
+              <div>
+                <div className="text-sm font-medium text-primary">Plano Profissional</div>
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span className="text-5xl font-bold">R$ 59,90</span>
+                  <span className="text-muted-foreground">/mês</span>
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">Serviços ilimitados por um valor fixo.</p>
+              </div>
+              <div className="hidden h-14 w-14 items-center justify-center rounded-2xl bg-[image:var(--gradient-primary)] text-primary-foreground sm:flex">
+                <Sparkles className="h-6 w-6" />
               </div>
             </div>
-            <div className="hidden h-14 w-14 items-center justify-center rounded-2xl bg-[image:var(--gradient-primary)] text-primary-foreground sm:flex">
-              <Sparkles className="h-6 w-6" />
-            </div>
+
+            <ul className="mt-8 grid gap-3">
+              {[
+                "Clientes ilimitados",
+                "Agenda de serviços",
+                "Orçamentos com PDF ilimitados",
+                "Dashboard financeiro",
+                "Documentos e recibos",
+                "Suporte por e-mail",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2 text-sm">
+                  <Check className="h-4 w-4 text-primary" /> {item}
+                </li>
+              ))}
+            </ul>
+
+            <Link to="/auth" className="mt-8 block">
+              <Button size="lg" className="h-12 w-full">Começar agora</Button>
+            </Link>
           </div>
+        </div>
 
-          <ul className="mt-8 grid gap-3 sm:grid-cols-2">
-            {[
-              "Clientes ilimitados",
-              "Agenda de serviços",
-              "Orçamentos com PDF",
-              "Dashboard financeiro",
-              "Documentos e recibos",
-              "Suporte por e-mail",
-            ].map((item) => (
-              <li key={item} className="flex items-center gap-2 text-sm">
-                <Check className="h-4 w-4 text-primary" /> {item}
-              </li>
-            ))}
-          </ul>
-
-          <Link to="/auth" className="mt-8 block">
-            <Button size="lg" className="h-12 w-full">Começar agora</Button>
-          </Link>
-
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
-            <span>Aceitamos:</span>
-            <span className="rounded-md border border-border bg-background px-2 py-1 font-medium">Pix</span>
-            <span className="rounded-md border border-border bg-background px-2 py-1 font-medium">Boleto</span>
-            <span className="rounded-md border border-border bg-background px-2 py-1 font-medium">Cartão</span>
-          </div>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
+          <span>Aceitamos:</span>
+          <span className="rounded-md border border-border bg-background px-2 py-1 font-medium">Pix</span>
+          <span className="rounded-md border border-border bg-background px-2 py-1 font-medium">Boleto</span>
+          <span className="rounded-md border border-border bg-background px-2 py-1 font-medium">Cartão</span>
         </div>
       </section>
 
