@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   PaintBucket,
   Zap,
@@ -15,6 +16,7 @@ import {
   Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CheckoutDialog } from "@/components/checkout-dialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,7 +25,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Organize clientes, agenda, orçamentos com PDF e dashboard. Serviço avulso R$9,90 ou plano único R$59,90/mês com Pix, boleto e cartão.",
+          "Organize clientes, agenda, orçamentos com PDF e dashboard. Serviço avulso R$9,90 ou plano único R$59,90/mês com Pix e cartão.",
       },
     ],
   }),
@@ -49,6 +51,8 @@ const features = [
 ];
 
 function LandingPage() {
+  const [checkoutPlan, setCheckoutPlan] = useState<"avulso" | "mensal" | null>(null);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
@@ -170,9 +174,14 @@ function LandingPage() {
               ))}
             </ul>
 
-            <Link to="/auth" className="mt-8 block">
-              <Button size="lg" variant="outline" className="h-12 w-full">Começar agora</Button>
-            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="mt-8 w-full h-12"
+              onClick={() => setCheckoutPlan("avulso")}
+            >
+              Começar agora
+            </Button>
           </div>
 
           {/* Plano Profissional */}
@@ -209,16 +218,19 @@ function LandingPage() {
               ))}
             </ul>
 
-            <Link to="/auth" className="mt-8 block">
-              <Button size="lg" className="h-12 w-full">Começar agora</Button>
-            </Link>
+            <Button
+              size="lg"
+              className="mt-8 w-full h-12"
+              onClick={() => setCheckoutPlan("mensal")}
+            >
+              Começar agora
+            </Button>
           </div>
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
           <span>Aceitamos:</span>
           <span className="rounded-md border border-border bg-background px-2 py-1 font-medium">Pix</span>
-          <span className="rounded-md border border-border bg-background px-2 py-1 font-medium">Boleto</span>
           <span className="rounded-md border border-border bg-background px-2 py-1 font-medium">Cartão</span>
         </div>
       </section>
@@ -226,6 +238,14 @@ function LandingPage() {
       <footer className="border-t border-border py-10 text-center text-sm text-muted-foreground">
         © {new Date().getFullYear()} ServiçoPro. Feito para autônomos.
       </footer>
+
+      {checkoutPlan && (
+        <CheckoutDialog
+          plan={checkoutPlan}
+          open={!!checkoutPlan}
+          onOpenChange={(o) => !o && setCheckoutPlan(null)}
+        />
+      )}
     </div>
   );
 }
