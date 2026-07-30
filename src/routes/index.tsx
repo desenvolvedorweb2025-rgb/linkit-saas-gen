@@ -67,9 +67,6 @@ function LandingPage() {
             <Link to="/auth">
               <Button variant="ghost" size="sm">Entrar</Button>
             </Link>
-            <Link to="/auth">
-              <Button size="sm">Começar grátis</Button>
-            </Link>
           </div>
         </div>
       </header>
